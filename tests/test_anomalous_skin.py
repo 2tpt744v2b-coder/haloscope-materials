@@ -47,3 +47,16 @@ def test_plasma_frequency_scaling_is_minus_two_thirds_power():
 def test_invalid_inputs_raise(args):
     with pytest.raises(ValueError):
         ask.surface_resistance_extreme_anomalous(*args)
+
+
+def test_regression_copper_inputs_from_table_unverified():
+    """REGRESSION ONLY. Inputs are from a table whose original source is still
+    to be identified (v_F = 1.57e6 m/s, hbar*omega_p = 10.83 eV for Cu), so the
+    physical inputs are UNVERIFIED. This test only guards against accidental
+    changes in the code; it does not validate the physics.
+    """
+    from haloscope_materials.units import ev_to_angular_frequency
+
+    wp = ev_to_angular_frequency(10.83)
+    r = ask.surface_resistance_extreme_anomalous(5.0e9, 1.57e6, wp)
+    assert r == pytest.approx(3.277e-3, rel=1e-3)
